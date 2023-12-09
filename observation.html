@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observation Page</title>
+    <!-- Include Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include latest versions of html2canvas and SheetJS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <style>
+        .additional-info {
+            color: green;
+        }
+
+        @media print {
+            body, #observationForm, script {
+                display: none;
+            }
+
+            #printContent {
+                display: block;
+            }
+
+            #printTitle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4">
+        <div id="observationTableContainer" class="overflow-x-auto mb-4">
+            <!-- Your table will be inserted here -->
+        </div>
+
+        <!-- Form for name and roll number -->
+        <form id="observationForm" class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
+            <input type="text" id="name" name="name" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+
+            <label for="rollNo" class="block mt-4 text-sm font-medium text-gray-700">Roll No:</label>
+            <input type="text" id="rollNo" name="rollNo" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+
+            <button type="button" id="downloadBtn" class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Download
+            </button>
+        </form>
+
+        <!-- Content to be printed -->
+        <div id="printContent" class="hidden">
+            <!-- Title for the table -->
+            <h1 id="printTitle" class="text-2xl font-bold mb-2">User Input Observation Table on Right Eye</h1>
+
+            <!-- Include the table content here -->
+            <div id="printTableContainer"></div>
+
+            <div id="printName" class="mt-4"></div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Function to parse URL parameters
+                function getParameterByName(name, url) {
+                    if (!url) url = window.location.href;
+                    name = name.replace(/[\[\]]/g, "\\$&");
+                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                        results = regex.exec(url);
+                    if (!results) return null;
+                    if (!results[2]) return "";
+                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
+
+                // Function to generate PNG
+                async function generatePNG() {
+                    var element = document.getElementById("observationTableContainer");
+
+                    try {
+                        // Get name and roll number from the form
+                        const name = document.getElementById("name").value || "Unknown";
+                        const rollNo = document.getElementById("rollNo").value || "Unknown";
+
+                        // Get current date and time
+                        const currentDate = new Date().toLocaleDateString();
+                        const currentTime = new Date().toLocaleTimeString();
+
+                        // Create HTML to append to the captured canvas
+                        const additionalInfoHtml = `Name: ${name}, Roll No: ${rollNo}, Date: ${currentDate}, Time: ${currentTime}`;
+
+                        // Use html2canvas to capture the content as an image
+                        const canvas = await html2canvas(element, { scale: 2 });
+
+                        // Create a new canvas element for additional information
+                        const infoCanvas = document.createElement("canvas");
+                        infoCanvas.width = canvas.width;
+                        infoCanvas.height = canvas.height + 100; // Adjust height for additional information
+
+                        // Draw the captured content onto the new canvas
+                        const ctx = infoCanvas.getContext("2d");
+                        ctx.drawImage(canvas, 0, 0);
+
+                        // Draw additional information onto the new canvas
+                        ctx.font = "14px Arial";
+                        ctx.fillStyle = "green"; // Set the text color to green
+                        ctx.fillText(additionalInfoHtml, 10, canvas.height + 20);
+
+                        // Trigger a download of the PNG image
+                        const link = document.createElement('a');
+                        link.href = infoCanvas.toDataURL('image/png');
+                        link.download = 'observation_table.png';
+                        link.click();
+                    } catch (error) {
+                        console.error('Error generating PNG:', error);
+                    }
+                }
+
+                // Your existing code to create the HTML table
+                var tableHtml = '<table class="table-auto bg-white shadow-md w-full">';
+                
+                // Header row
+                tableHtml += '<thead class="bg-gray-200">';
+                tableHtml += '<tr><th class="p-2">Rabbit No</th>';
+                tableHtml += '<th class="p-2">Pre Drug Light Reflex</th>';
+                tableHtml += '<th class="p-2">Pre Drug Corneal Reflex</th>';
+                tableHtml += '<th class="p-2">Drug Name</th>';
+                tableHtml += '<th class="p-2">Pupil Size</th>';
+                tableHtml += '<th class="p-2">Post Drug Light Reflex</th>';
+                tableHtml += '<th class="p-2">Post Drug Corneal Reflex</th></tr>';
+                tableHtml += '</thead>';
+
+                // Loop through rows (adjust the loop limit based on the number of rows you have)
+                tableHtml += '<tbody>';
+                for (var i = 1; i <= 10; i++) {
+                    // Get values from URL parameters for each row
+                    var rabbitNo = getParameterByName("rabbitNo" + i);
+                    var preDrugLightReflex = getParameterByName("preDrugLightReflex" + i);
+                    var preDrugCornealReflex = getParameterByName("preDrugCornealReflex" + i);
+                    var drugName = getParameterByName("drugName" + i);
+                    var pupilSize = getParameterByName("pupilSize" + i);
+                    var postDrugLightReflex = getParameterByName("postDrugLightReflex" + i);
+                    var postDrugCornealReflex = getParameterByName("postDrugCornealReflex" + i);
+
+                    // Data row
+                    tableHtml += '<tr>';
+                    tableHtml += '<td class="p-2">' + (rabbitNo || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (preDrugLightReflex || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (preDrugCornealReflex || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (drugName || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (pupilSize || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (postDrugLightReflex || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (postDrugCornealReflex || '') + '</td>';
+                    tableHtml += '</tr>';
+                }
+                tableHtml += '</tbody>';
+
+                tableHtml += '</table>';
+
+                // Display table in the specified container
+                document.getElementById("observationTableContainer").innerHTML = tableHtml;
+
+                // Display table for printing
+                document.getElementById("printTableContainer").innerHTML = tableHtml;
+
+                // Display name for printing
+                const printName = document.getElementById("printName");
+                printName.innerHTML = '<strong>Name:</strong> ' + (document.getElementById("name").value || "Unknown");
+
+                // Display title for printing
+                const printTitle = document.getElementById("printTitle");
+                printTitle.innerHTML = 'User Input Observation Table on Right Eye';
+
+                // Attach click event to the button after the page is fully loaded
+                document.getElementById("downloadBtn").addEventListener("click", generatePNG);
+            });
+        </script>
+    </div>
+
+</body>
+</html>
