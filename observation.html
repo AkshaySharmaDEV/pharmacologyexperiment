@@ -121,14 +121,16 @@
                 
                 // Header row
                 tableHtml += '<thead class="bg-gray-200">';
-                tableHtml += '<tr><th class="p-2">Rabbit No</th>';
+                tableHtml += '<tr>';
+                tableHtml += '<th class="p-2">Rabbit No</th>';
                 tableHtml += '<th class="p-2">Pre Drug Light Reflex</th>';
                 tableHtml += '<th class="p-2">Pre Drug Corneal Reflex</th>';
                 tableHtml += '<th class="p-2">Drug Name</th>';
                 tableHtml += '<th class="p-2">Pupil Size</th>';
                 tableHtml += '<th class="p-2">Post Drug Light Reflex</th>';
-                tableHtml += '<th class="p-2">Post Drug Corneal Reflex</th></tr>';
-                tableHtml += '<th class="p-2">Result</th></tr>';
+                tableHtml += '<th class="p-2">Post Drug Corneal Reflex</th>';
+                tableHtml += '<th class="p-2" colspan="2">Result</th>'; // colspan for "Result" header spanning two columns
+                tableHtml += '</tr>';
                 tableHtml += '</thead>';
 
                 // Loop through rows (adjust the loop limit based on the number of rows you have)
@@ -153,7 +155,7 @@
                     tableHtml += '<td class="p-2">' + (pupilSize || '') + '</td>';
                     tableHtml += '<td class="p-2">' + (postDrugLightReflex || '') + '</td>';
                     tableHtml += '<td class="p-2">' + (postDrugCornealReflex || '') + '</td>';
-                    tableHtml += '<td class="p-2">' + (result || '') + '</td>';
+                    tableHtml += '<td class="p-2" colspan="2">' + (result || '') + '</td>'; // colspan for "Result" spanning two columns
                     tableHtml += '</tr>';
                 }
                 tableHtml += '</tbody>';
