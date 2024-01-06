@@ -128,6 +128,7 @@
                 tableHtml += '<th class="p-2">Pupil Size</th>';
                 tableHtml += '<th class="p-2">Post Drug Light Reflex</th>';
                 tableHtml += '<th class="p-2">Post Drug Corneal Reflex</th></tr>';
+                tableHtml += '<th class="p-2">Result</th></tr>';
                 tableHtml += '</thead>';
 
                 // Loop through rows (adjust the loop limit based on the number of rows you have)
@@ -141,6 +142,7 @@
                     var pupilSize = getParameterByName("pupilSize" + i);
                     var postDrugLightReflex = getParameterByName("postDrugLightReflex" + i);
                     var postDrugCornealReflex = getParameterByName("postDrugCornealReflex" + i);
+                    var result = getParameterByName("result" + i);
 
                     // Data row
                     tableHtml += '<tr>';
@@ -151,6 +153,7 @@
                     tableHtml += '<td class="p-2">' + (pupilSize || '') + '</td>';
                     tableHtml += '<td class="p-2">' + (postDrugLightReflex || '') + '</td>';
                     tableHtml += '<td class="p-2">' + (postDrugCornealReflex || '') + '</td>';
+                    tableHtml += '<td class="p-2">' + (result || '') + '</td>';
                     tableHtml += '</tr>';
                 }
                 tableHtml += '</tbody>';
